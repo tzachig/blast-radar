@@ -18,19 +18,6 @@ export interface BlastData {
   compromisedIdentity: string;
 }
 
-const sensitiveDataFolders = [
-  '/Finance/Q4-Reports',
-  '/HR/Salaries',
-  '/Legal/Contracts',
-  '/Engineering/API-Keys',
-  '/Security/Vulnerability-Reports',
-  '/Executive/Board-Minutes',
-  '/Customer-Data/PII',
-  '/Operations/Infrastructure',
-  '/Compliance/Audit-Logs',
-  '/Database/Backups',
-];
-
 const lateralSystems = [
   'dev-server-01',
   'prod-database-primary',
