@@ -53,7 +53,7 @@ export function generateMockBlastData(identity: string): BlastData {
   const nodes: GraphNode[] = [
     {
       id: 'compromised',
-      label: identity,
+      label: `🔴 ${identity}`,
       type: 'compromised',
       risk: 100,
     },
@@ -61,13 +61,35 @@ export function generateMockBlastData(identity: string): BlastData {
 
   const edges: GraphEdge[] = [];
 
-  // Add sensitive data nodes
-  const numSensitive = 3 + Math.floor(Math.random() * 3);
+  // Enhanced realistic folder structure
+  const enhancedFolders = [
+    '/Finance/Q4-2024-Budgets',
+    '/Finance/Executive-Salaries',
+    '/HR/Employee-Records',
+    '/HR/Background-Checks',
+    '/Legal/Contracts-NDAs',
+    '/Legal/Litigation-Files',
+    '/Engineering/API-Keys-Vault',
+    '/Engineering/Database-Credentials',
+    '/Security/Incident-Reports',
+    '/Security/Penetration-Tests',
+    '/Executive/Board-Minutes',
+    '/Executive/M&A-Strategy',
+    '/Customer-Data/PII-Database',
+    '/Customer-Data/Payment-Records',
+    '/Operations/Server-Configs',
+    '/Operations/Backup-Keys',
+    '/Marketing/Customer-Lists',
+    '/R&D/Product-Roadmap',
+  ];
+
+  // Add sensitive data nodes (8-10 folders)
+  const numSensitive = 8 + Math.floor(Math.random() * 3);
   for (let i = 0; i < numSensitive; i++) {
-    const folder = sensitiveDataFolders[i % sensitiveDataFolders.length];
+    const folder = enhancedFolders[i % enhancedFolders.length];
     nodes.push({
       id: `sensitive-${i}`,
-      label: folder,
+      label: `🔴 ${folder}`,
       type: 'sensitive',
       risk: 85 + Math.random() * 15,
     });
@@ -78,13 +100,13 @@ export function generateMockBlastData(identity: string): BlastData {
     });
   }
 
-  // Add lateral movement systems
-  const numLateral = 3 + Math.floor(Math.random() * 3);
+  // Add lateral movement systems (6-8 systems)
+  const numLateral = 6 + Math.floor(Math.random() * 3);
   for (let i = 0; i < numLateral; i++) {
     const system = lateralSystems[i % lateralSystems.length];
     nodes.push({
       id: `lateral-${i}`,
-      label: system,
+      label: `🟠 ${system}`,
       type: 'lateral',
       risk: 60 + Math.random() * 25,
     });
@@ -94,7 +116,7 @@ export function generateMockBlastData(identity: string): BlastData {
       type: 'lateral',
     });
 
-    // Add some inter-system connections
+    // Add inter-system connections
     if (i > 0) {
       edges.push({
         source: `lateral-${i - 1}`,
@@ -104,13 +126,13 @@ export function generateMockBlastData(identity: string): BlastData {
     }
   }
 
-  // Add peer accounts with identical permissions
-  const numPeers = 2 + Math.floor(Math.random() * 2);
+  // Add peer accounts (3-4 peers)
+  const numPeers = 3 + Math.floor(Math.random() * 2);
   for (let i = 0; i < numPeers; i++) {
     const peer = peerAccounts[i % peerAccounts.length];
     nodes.push({
       id: `peer-${i}`,
-      label: peer,
+      label: `🟡 ${peer}`,
       type: 'peer',
       risk: 40 + Math.random() * 30,
     });

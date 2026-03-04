@@ -51,22 +51,31 @@ export default function ResultsContent() {
   useEffect(() => {
     if (!blastData || !svgRef.current) return;
 
-    // D3 Force-directed graph
-    const width = 600;
-    const height = 500;
+    const width = svgRef.current.clientWidth || 600;
+    const height = 600;
 
-    const svg = d3.select(svgRef.current)
-      .attr('width', width)
-      .attr('height', height);
-
+    const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
 
-    const simulation = d3.forceSimulation(blastData.nodes as any)
-      .force('link', d3.forceLink(blastData.edges).id((d: any) => d.id).distance(80))
-      .force('charge', d3.forceManyBody().strength(-300))
-      .force('center', d3.forceCenter(width / 2, height / 2));
+    // Add background
+    svg.append('rect')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('fill', '#1a1f3a');
 
-    const link = svg.append('g')
+    const simulation = d3.forceSimulation(blastData.nodes as any)
+      .force('link', d3.forceLink(blastData.edges as any)
+        .id((d: any) => d.id)
+        .distance(120)
+        .strength(0.5))
+      .force('charge', d3.forceManyBody().strength(-400).distanceMax(500))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collision', d3.forceCollide().radius(30));
+
+    const g = svg.append('g');
+
+    // Links
+    const link = g.append('g')
       .selectAll('line')
       .data(blastData.edges)
       .join('line')
@@ -75,35 +84,43 @@ export default function ResultsContent() {
         if (d.type === 'lateral') return '#f97316';
         return '#eab308';
       })
-      .attr('stroke-width', 2)
-      .attr('opacity', 0.6);
+      .attr('stroke-width', 2.5)
+      .attr('opacity', 0.7);
 
-    const node = svg.append('g')
-      .selectAll('circle')
+    // Nodes with glow effect
+    const nodeGroup = g.append('g')
+      .selectAll('g')
       .data(blastData.nodes)
-      .join('circle')
-      .attr('r', (d: any) => (d.type === 'compromised' ? 20 : 12))
+      .join('g');
+
+    nodeGroup.append('circle')
+      .attr('r', (d: any) => (d.type === 'compromised' ? 25 : 15))
       .attr('fill', (d: any) => {
         if (d.type === 'compromised') return '#dc2626';
-        if (d.type === 'sensitive') return '#dc2626';
+        if (d.type === 'sensitive') return '#ef4444';
         if (d.type === 'lateral') return '#f97316';
         return '#eab308';
       })
-      .attr('opacity', 0.8)
+      .attr('opacity', 0.9)
+      .attr('stroke', 'white')
+      .attr('stroke-width', 2)
       .call(d3.drag<any, any>()
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended) as any);
 
-    const labels = svg.append('g')
-      .selectAll('text')
-      .data(blastData.nodes)
-      .join('text')
-      .attr('font-size', 10)
+    // Labels with background
+    nodeGroup.append('text')
+      .attr('font-size', (d: any) => (d.type === 'compromised' ? '11px' : '9px'))
       .attr('fill', 'white')
       .attr('text-anchor', 'middle')
       .attr('dy', '0.3em')
-      .text((d: any) => d.label.split('/').pop().substring(0, 8));
+      .attr('font-weight', 'bold')
+      .text((d: any) => {
+        const parts = d.label.split('/');
+        const lastPart = parts[parts.length - 1];
+        return lastPart.substring(0, 12);
+      });
 
     simulation.on('tick', () => {
       link
@@ -112,13 +129,8 @@ export default function ResultsContent() {
         .attr('x2', (d: any) => d.target.x)
         .attr('y2', (d: any) => d.target.y);
 
-      node
-        .attr('cx', (d: any) => d.x)
-        .attr('cy', (d: any) => d.y);
-
-      labels
-        .attr('x', (d: any) => d.x)
-        .attr('y', (d: any) => d.y);
+      nodeGroup
+        .attr('transform', (d: any) => `translate(${d.x},${d.y})`);
     });
 
     function dragstarted(event: any, d: any) {
@@ -170,7 +182,13 @@ export default function ResultsContent() {
             <div className="lg:col-span-2">
               <div className="bg-blast-navy border border-red-500/20 rounded-lg p-6">
                 <h2 className="text-xl font-bold mb-4">Blast Radius Map</h2>
-                <svg ref={svgRef} className="w-full border border-red-500/10 rounded" />
+                <svg 
+                  ref={svgRef} 
+                  width="100%" 
+                  height="600"
+                  className="border border-red-500/10 rounded bg-blast-dark"
+                  style={{ minHeight: '600px' }}
+                />
                 <div className="mt-4 grid grid-cols-4 gap-2 text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-red-600 rounded-full" />
