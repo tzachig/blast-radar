@@ -72,6 +72,16 @@ export default function Home() {
           </button>
         </form>
 
+        {/* Navigation */}
+        <div className="mt-8 flex gap-4 justify-center">
+          <button
+            onClick={() => router.push('/attack-map')}
+            className="px-6 py-3 bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 font-bold rounded-lg transition flex items-center gap-2"
+          >
+            🌍 Global Attack Map
+          </button>
+        </div>
+
         {/* Info */}
         <div className="mt-12 grid grid-cols-3 gap-6 text-center">
           <div>
